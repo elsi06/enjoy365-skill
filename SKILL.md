@@ -16,21 +16,33 @@ metadata:
 
 # enjoy365 Daily Deal Skill
 
-Holt den aktuellen Tagesdeal von enjoy365.ch.
+Dieser Skill ruft den aktuellen "Top Deal" (Tagesdeal) von der Schweizer Plattform [enjoy365.ch](https://enjoy365.ch/top-deals/) ab.
 
 ## Features
 
-- Extrahieren des Produktnamens, Preises, Rabatts und der Verfügbarkeit.
-- Zeigt das Produktbild und den Link zum Shop an.
+- **Automatisierte Extraktion:** Holt Produktname, aktueller Preis, Marktpreis und Rabatt.
+- **Visualisierung:** Extrahiert das Produktbild und stellt einen direkten Link zum Deal bereit.
+- **Status-Check:** Prüft die Verfügbarkeit des Deals.
 
-## Usage
+## Installation
+
+Der Skill benötigt Node.js und Puppeteer.
 
 ```bash
-# Run manually
+cd skills/enjoy365
+npm install
+```
+
+## Nutzung
+
+Der Skill kann direkt über Node.js ausgeführt werden:
+
+```bash
 node src/index.js
 ```
 
-## Requirements
+In OpenClaw kann der Skill durch das Aufrufen des Tools oder die entsprechende Anfrage an den Agenten genutzt werden.
 
-- Node.js
-- Puppeteer (installiert via `npm install`)
+## Lizenz
+
+Dieser Skill ist unter der [MIT License](LICENSE) veröffentlicht.
