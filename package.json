@@ -1,0 +1,12 @@
+{
+  "name": "enjoy365-daily-deal",
+  "version": "1.0.0",
+  "description": "Fetches the current daily deal from enjoy365.ch",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "puppeteer": "^24.0.0"
+  }
+}
