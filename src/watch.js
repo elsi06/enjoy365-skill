@@ -22,6 +22,28 @@ function normalizePrice(raw) {
   return m ? m[1].replace(',', '.') : null;
 }
 
+function normalizeText(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function matchesQuery(query, title) {
+  const q = normalizeText(query);
+  const t = normalizeText(title);
+  if (!q || !t) return false;
+
+  const terms = q.split(' ').filter(x => x.length >= 3);
+  if (!terms.length) return false;
+
+  // strict: all terms must appear in title
+  return terms.every(term => t.includes(term));
+}
+
 (async () => {
   const queries = loadQueries();
   if (!queries.length) {
@@ -86,7 +108,15 @@ function normalizePrice(raw) {
         }).filter(x => x.title && x.link);
       });
 
-      allResults.push({ query, url, items });
+      // strict local filtering + dedupe to avoid false positives / duplicates
+      const filtered = items.filter(i => matchesQuery(query, i.title));
+      const dedupMap = new Map();
+      for (const i of filtered) {
+        const key = `${normalizeText(i.title)}|${(i.link || '').split('?')[0]}`;
+        if (!dedupMap.has(key)) dedupMap.set(key, i);
+      }
+
+      allResults.push({ query, url, items: Array.from(dedupMap.values()) });
     }
 
     const found = allResults.filter(r => r.items.length > 0);
