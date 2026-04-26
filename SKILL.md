@@ -1,48 +1,59 @@
 ---
 name: enjoy365
-description: Fetches the current daily deal (Tagesdeal) from enjoy365.ch with price, discount, image, and link.
+description: Fetches deals and tracks all products from enjoy365.ch. Supports daily deal, watchlist, full shop scraping, and product change detection.
 metadata:
-  {
-    "openclaw":
-      {
-        "emoji": "🛍️",
-        "requires":
-          {
-            "bins": ["node", "npm"],
-          },
-      },
-  }
+  openclaw:
+    emoji: "🛍️"
+    requires:
+      bins: ["node", "npm"]
 ---
 
-# enjoy365 Daily Deal Skill
+# enjoy365 Skill
 
-Dieser Skill ruft den aktuellen "Top Deal" (Tagesdeal) von der Schweizer Plattform [enjoy365.ch](https://enjoy365.ch/top-deals/) ab.
+Schweizer Plattform [enjoy365.ch](https://enjoy365.ch) — Deals und Produkt-Tracking.
 
-## Features
+## Scripts
 
-- **Automatisierte Extraktion:** Holt Produktname, aktueller Preis, Marktpreis und Rabatt.
-- **Visualisierung:** Extrahiert das Produktbild und stellt einen direkten Link zum Deal bereit.
-- **Status-Check:** Prüft die Verfügbarkeit des Deals.
+| Script | Zweck |
+|--------|-------|
+| `src/index.js` | Holt den aktuellen Top-Deal (Tagesdeal) |
+| `src/watch.js` | Watchlist-Suche (gezielte Queries aus `watchlist.json`) |
+| `src/scrape-all.js` | Voll-Scraper: Alle Produkte erfassen, Diff gegen `products.json`, Änderungen melden |
+
+## Produkt-DB (`products.json`)
+
+- Enthält alle jemals erfassten Produkte mit Preis, altem Preis, Rabatt, Link, Bild
+- Jeder Lauf von `scrape-all.js` vergleicht gegen die DB und meldet:
+  - 🆕 Neue Produkte
+  - 💰 Preisänderungen
+  - ❌ Entfernte Produkte
+- `firstSeen` / `lastSeen` Datums-Timestamps pro Produkt
+
+## Cron-Job
+
+Täglicher Diff-Lauf:
+```bash
+node src/scrape-all.js
+```
+
+Wird über OpenClaw Cron oder Heartbeat getriggert. Bei Änderungen → Telegram-Benachrichtigung.
 
 ## Installation
 
-Der Skill benötigt Node.js und Puppeteer.
-
 ```bash
-cd skills/enjoy365
+cd skills/enjoy365-skill
 npm install
 ```
 
 ## Nutzung
 
-Der Skill kann direkt über Node.js ausgeführt werden:
-
 ```bash
+# Tagesdeal
 node src/index.js
+
+# Watchlist-Check
+node src/watch.js
+
+# Voll-Scraper (initial + täglich)
+node src/scrape-all.js
 ```
-
-In OpenClaw kann der Skill durch das Aufrufen des Tools oder die entsprechende Anfrage an den Agenten genutzt werden.
-
-## Lizenz
-
-Dieser Skill ist unter der [MIT License](LICENSE) veröffentlicht.
